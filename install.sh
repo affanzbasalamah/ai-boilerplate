@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # AI Boilerplate installer for Ubuntu and RHEL 10 (Rocky/Alma 10).
-# Usage: curl -fsSL https://ai-boilerplate.pages.dev/install.sh | sh
+# Usage: curl -fsSL https://ai.salamahsystems.com/install.sh | sh
 set -euo pipefail
 
 if [ ! -t 0 ] && [ -t 1 ] && [ -r /dev/tty ]; then
