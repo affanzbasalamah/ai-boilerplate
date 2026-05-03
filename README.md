@@ -3,7 +3,7 @@
 One-command bootstrap for an AI development workstation on **Ubuntu** or **RHEL 10** (Rocky 10 / Alma 10).
 
 ```sh
-curl -fsSL https://ai.salamahsystems.com/install.sh | sh
+curl -fsSL https://ai.salamahsystems.com/install.sh | bash
 ```
 
 The script asks Y/n for each major component, then sets up everything and prints next steps.
