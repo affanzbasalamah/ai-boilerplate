@@ -16,7 +16,8 @@ The script asks Y/n for each major component, then sets up everything and prints
 | **Claude Code** | Primary AI coding harness. |
 | **Codex CLI** (`@openai/codex`) | Standalone Codex CLI — used directly and via the Claude Code bridge plugin below. |
 | **Gemini CLI** (`@google/gemini-cli`) | Google's Gemini CLI for a third AI perspective on your code. |
-| **Leaf** | Terminal markdown reader — renders `.md` files beautifully in the shell. |
+| **OpenCode** | AI coding agent from opencode.ai. |
+| **Leaf** | Terminal markdown reader — always installed, no prompt. |
 | **Node.js 22 LTS** | Auto-installed if you pick Codex, Gemini CLI, Claude Code plugins, or skills. AppStream on RHEL 10; NodeSource on Ubuntu. |
 
 ### Claude Code plugins (auto-installed when Claude Code is selected)

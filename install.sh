@@ -118,6 +118,14 @@ install_gemini() {
   ok "Gemini CLI installed. Run \`gemini\` to authenticate (Google account required)."
 }
 
+install_opencode() {
+  if have opencode; then ok "OpenCode already installed — skipping."; return; fi
+  info "Installing OpenCode..."
+  curl -fsSL https://opencode.ai/install | bash
+  ensure_local_bin_path
+  ok "OpenCode installed."
+}
+
 install_leaf() {
   if have leaf; then ok "Leaf already installed — skipping."; return; fi
   info "Installing Leaf (markdown reader)..."
@@ -174,21 +182,23 @@ print_summary() {
   echo
   printf "%s========== AI BOILERPLATE INSTALL COMPLETE ==========%s\n" "$C_GREEN" "$C_RESET"
   echo "Installed components:"
-  have tailscale && echo "  - tailscale ($(tailscale version 2>/dev/null | head -n1))"
-  have claude    && echo "  - claude    ($(claude --version 2>/dev/null | head -n1))"
-  have codex     && echo "  - codex     ($(codex --version 2>/dev/null | head -n1))"
-  have gemini    && echo "  - gemini    ($(gemini --version 2>/dev/null | head -n1))"
-  have leaf      && echo "  - leaf      (markdown reader)"
-  have node      && echo "  - node $(node -v)  npm $(npm -v)"
-  have rtk       && echo "  - rtk hook (auto-rewrites bash commands for token savings)"
+  have tailscale  && echo "  - tailscale  ($(tailscale version 2>/dev/null | head -n1))"
+  have claude     && echo "  - claude     ($(claude --version 2>/dev/null | head -n1))"
+  have codex      && echo "  - codex      ($(codex --version 2>/dev/null | head -n1))"
+  have gemini     && echo "  - gemini     ($(gemini --version 2>/dev/null | head -n1))"
+  have opencode   && echo "  - opencode   ($(opencode --version 2>/dev/null | head -n1))"
+  have leaf       && echo "  - leaf       (markdown reader)"
+  have node       && echo "  - node $(node -v)  npm $(npm -v)"
+  have rtk        && echo "  - rtk hook (auto-rewrites bash commands for token savings)"
   echo
   echo "Next steps:"
-  have tailscale && echo "  • sudo tailscale up                    # authenticate this machine to your tailnet"
-  have claude    && echo "  • claude                                # launch Claude Code"
-  have codex     && echo "  • inside Claude Code: /codex:setup     # authenticate Codex (OPENAI_API_KEY or ChatGPT)"
-  have gemini    && echo "  • gemini                                # authenticate Gemini CLI (Google account)"
-  have leaf      && echo "  • leaf <file.md>                        # read any markdown file in the terminal"
-  have claude    && echo "  • shell rc updated → open a new terminal (or \`source ~/.bashrc\`) so PATH picks up ~/.local/bin"
+  have tailscale  && echo "  • sudo tailscale up                    # authenticate this machine to your tailnet"
+  have claude     && echo "  • claude                                # launch Claude Code"
+  have codex      && echo "  • inside Claude Code: /codex:setup     # authenticate Codex (OPENAI_API_KEY or ChatGPT)"
+  have gemini     && echo "  • gemini                                # authenticate Gemini CLI (Google account)"
+  have opencode   && echo "  • opencode                              # launch OpenCode"
+  have leaf       && echo "  • leaf <file.md>                        # read any markdown file in the terminal"
+  have claude     && echo "  • shell rc updated → open a new terminal (or \`source ~/.bashrc\`) so PATH picks up ~/.local/bin"
   echo
   echo "New slash commands available in Claude Code:"
   echo "  Workflow (Waza):  /think  /design  /check  /hunt  /write  /learn  /read  /health"
@@ -207,12 +217,12 @@ main() {
   detect_os
   install_baseline
 
-  WANT_TAILSCALE=0; WANT_CLAUDE=0; WANT_CODEX=0; WANT_GEMINI=0; WANT_LEAF=0
-  confirm "Install Tailscale?"        && WANT_TAILSCALE=1 || warn "Skipping Tailscale."
-  confirm "Install Claude Code?"      && WANT_CLAUDE=1    || warn "Skipping Claude Code (plugins/skills will also be skipped)."
-  confirm "Install Codex CLI?"        && WANT_CODEX=1     || warn "Skipping Codex."
-  confirm "Install Gemini CLI?"       && WANT_GEMINI=1    || warn "Skipping Gemini CLI."
-  confirm "Install Leaf (md reader)?" && WANT_LEAF=1      || warn "Skipping Leaf."
+  WANT_TAILSCALE=0; WANT_CLAUDE=0; WANT_CODEX=0; WANT_GEMINI=0; WANT_OPENCODE=0
+  confirm "Install Tailscale?"   && WANT_TAILSCALE=1  || warn "Skipping Tailscale."
+  confirm "Install Claude Code?" && WANT_CLAUDE=1     || warn "Skipping Claude Code (plugins/skills will also be skipped)."
+  confirm "Install Codex CLI?"   && WANT_CODEX=1      || warn "Skipping Codex."
+  confirm "Install Gemini CLI?"  && WANT_GEMINI=1     || warn "Skipping Gemini CLI."
+  confirm "Install OpenCode?"    && WANT_OPENCODE=1   || warn "Skipping OpenCode."
 
   [ "$WANT_TAILSCALE" -eq 1 ] && install_tailscale
   [ "$WANT_CLAUDE"    -eq 1 ] && install_claude_code
@@ -221,9 +231,10 @@ main() {
     install_node
   fi
 
-  [ "$WANT_CODEX"  -eq 1 ] && install_codex
-  [ "$WANT_GEMINI" -eq 1 ] && install_gemini
-  [ "$WANT_LEAF"   -eq 1 ] && install_leaf
+  [ "$WANT_CODEX"     -eq 1 ] && install_codex
+  [ "$WANT_GEMINI"    -eq 1 ] && install_gemini
+  [ "$WANT_OPENCODE"  -eq 1 ] && install_opencode
+  install_leaf
 
   if [ "$WANT_CLAUDE" -eq 1 ]; then
     info "Installing Claude Code plugins..."
