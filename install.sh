@@ -111,6 +111,21 @@ install_codex() {
   ok "Codex installed. Run \`/codex:setup\` inside Claude Code to authenticate (needs OPENAI_API_KEY or ChatGPT subscription)."
 }
 
+install_gemini() {
+  if have gemini; then ok "Gemini CLI already installed — skipping."; return; fi
+  info "Installing Gemini CLI..."
+  sudo npm install -g @google/gemini-cli >/dev/null
+  ok "Gemini CLI installed. Run \`gemini\` to authenticate (Google account required)."
+}
+
+install_leaf() {
+  if have leaf; then ok "Leaf already installed — skipping."; return; fi
+  info "Installing Leaf (markdown reader)..."
+  curl -fsSL https://raw.githubusercontent.com/RivoLink/leaf/main/scripts/install.sh | sh
+  ensure_local_bin_path
+  ok "Leaf installed. Use \`leaf <file.md>\` to read markdown in the terminal."
+}
+
 claude_plugin_installed() {
   claude plugin list 2>/dev/null | grep -qi "$1"
 }
@@ -162,6 +177,8 @@ print_summary() {
   have tailscale && echo "  - tailscale ($(tailscale version 2>/dev/null | head -n1))"
   have claude    && echo "  - claude    ($(claude --version 2>/dev/null | head -n1))"
   have codex     && echo "  - codex     ($(codex --version 2>/dev/null | head -n1))"
+  have gemini    && echo "  - gemini    ($(gemini --version 2>/dev/null | head -n1))"
+  have leaf      && echo "  - leaf      (markdown reader)"
   have node      && echo "  - node $(node -v)  npm $(npm -v)"
   have rtk       && echo "  - rtk hook (auto-rewrites bash commands for token savings)"
   echo
@@ -169,6 +186,8 @@ print_summary() {
   have tailscale && echo "  • sudo tailscale up                    # authenticate this machine to your tailnet"
   have claude    && echo "  • claude                                # launch Claude Code"
   have codex     && echo "  • inside Claude Code: /codex:setup     # authenticate Codex (OPENAI_API_KEY or ChatGPT)"
+  have gemini    && echo "  • gemini                                # authenticate Gemini CLI (Google account)"
+  have leaf      && echo "  • leaf <file.md>                        # read any markdown file in the terminal"
   have claude    && echo "  • shell rc updated → open a new terminal (or \`source ~/.bashrc\`) so PATH picks up ~/.local/bin"
   echo
   echo "New slash commands available in Claude Code:"
@@ -188,19 +207,23 @@ main() {
   detect_os
   install_baseline
 
-  WANT_TAILSCALE=0; WANT_CLAUDE=0; WANT_CODEX=0
-  confirm "Install Tailscale?"   && WANT_TAILSCALE=1 || warn "Skipping Tailscale."
-  confirm "Install Claude Code?" && WANT_CLAUDE=1    || warn "Skipping Claude Code (plugins/skills will also be skipped)."
-  confirm "Install Codex CLI?"   && WANT_CODEX=1     || warn "Skipping Codex."
+  WANT_TAILSCALE=0; WANT_CLAUDE=0; WANT_CODEX=0; WANT_GEMINI=0; WANT_LEAF=0
+  confirm "Install Tailscale?"        && WANT_TAILSCALE=1 || warn "Skipping Tailscale."
+  confirm "Install Claude Code?"      && WANT_CLAUDE=1    || warn "Skipping Claude Code (plugins/skills will also be skipped)."
+  confirm "Install Codex CLI?"        && WANT_CODEX=1     || warn "Skipping Codex."
+  confirm "Install Gemini CLI?"       && WANT_GEMINI=1    || warn "Skipping Gemini CLI."
+  confirm "Install Leaf (md reader)?" && WANT_LEAF=1      || warn "Skipping Leaf."
 
   [ "$WANT_TAILSCALE" -eq 1 ] && install_tailscale
   [ "$WANT_CLAUDE"    -eq 1 ] && install_claude_code
 
-  if [ "$WANT_CODEX" -eq 1 ] || [ "$WANT_CLAUDE" -eq 1 ]; then
+  if [ "$WANT_CODEX" -eq 1 ] || [ "$WANT_GEMINI" -eq 1 ] || [ "$WANT_CLAUDE" -eq 1 ]; then
     install_node
   fi
 
-  [ "$WANT_CODEX" -eq 1 ] && install_codex
+  [ "$WANT_CODEX"  -eq 1 ] && install_codex
+  [ "$WANT_GEMINI" -eq 1 ] && install_gemini
+  [ "$WANT_LEAF"   -eq 1 ] && install_leaf
 
   if [ "$WANT_CLAUDE" -eq 1 ]; then
     info "Installing Claude Code plugins..."

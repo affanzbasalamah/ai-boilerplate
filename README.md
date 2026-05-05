@@ -15,7 +15,9 @@ The script asks Y/n for each major component, then sets up everything and prints
 | **Tailscale** | Mesh VPN so you can reach this box from anywhere. |
 | **Claude Code** | Primary AI coding harness. |
 | **Codex CLI** (`@openai/codex`) | Standalone Codex CLI — used directly and via the Claude Code bridge plugin below. |
-| **Node.js 22 LTS** | Auto-installed if you pick Codex, Claude Code plugins, or skills. AppStream on RHEL 10; NodeSource on Ubuntu. |
+| **Gemini CLI** (`@google/gemini-cli`) | Google's Gemini CLI for a third AI perspective on your code. |
+| **Leaf** | Terminal markdown reader — renders `.md` files beautifully in the shell. |
+| **Node.js 22 LTS** | Auto-installed if you pick Codex, Gemini CLI, Claude Code plugins, or skills. AppStream on RHEL 10; NodeSource on Ubuntu. |
 
 ### Claude Code plugins (auto-installed when Claude Code is selected)
 
@@ -40,6 +42,7 @@ The summary at the end prints exactly what to do next, but in short:
 2. Open a fresh terminal (so `~/.local/bin` is on `PATH`).
 3. `claude` to launch Claude Code.
 4. Inside Claude Code: `/codex:setup` to authenticate Codex.
+5. Run `gemini` once to authenticate with your Google account.
 
 ## Re-running
 
